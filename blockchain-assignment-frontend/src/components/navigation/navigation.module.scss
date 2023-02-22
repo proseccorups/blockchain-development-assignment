@@ -1,0 +1,26 @@
+@import './../../styles/colors.scss';
+
+.root {
+    margin-top: 0.5rem;
+    display: flex;
+    background: white;
+    padding: .6rem;
+    border-radius: 50px !important;
+
+    .option {
+        border: none;
+        background: white;
+        padding: .5rem;
+        width: 100%;
+        border-radius: 20px;
+        color: $blockchain-dark-blue;
+        font-weight: bold;
+        font-size: 17px;
+        transition: all .1s ease-in-out;
+
+        &.active {
+            background: $blockchain-dark-blue;
+            color: white;
+        }
+    }
+}

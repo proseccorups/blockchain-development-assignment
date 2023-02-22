@@ -1,0 +1,33 @@
+@import 'src/styles/colors.scss';
+
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 15px;
+    width: 100%;
+    background: $blockchain-red;
+    border-radius: 10px;
+    color: white;
+    border: none;
+
+    &:disabled {
+        opacity: 50%;
+        cursor: not-allowed;
+    }
+
+    &:hover:not(.loading, :disabled) {
+        background: $blockchain-red-light;
+    }
+
+    &.loading {
+        opacity: 50%;
+        cursor: progress;
+    }
+
+    .spinner {
+        position: absolute;
+    }
+
+}

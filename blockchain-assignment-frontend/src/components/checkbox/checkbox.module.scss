@@ -1,0 +1,20 @@
+@import './../../styles/colors.scss';
+
+.checkbox {
+    padding: 0;
+    border: none;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .checkmark {
+        width: 20px;
+        height: 20px;
+    }
+
+}

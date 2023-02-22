@@ -1,0 +1,42 @@
+@import 'src/styles/colors.scss';
+
+.input {
+    text-align: start;
+
+    .label {
+        color: $blockchain-dark-blue;
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    input {
+        width: 100%;
+        border-radius: 10px;
+        border: none;
+        font: inherit;
+        padding: 0.5rem;
+        outline: none;
+
+        &:focus:not(.error) {
+            outline: 1px solid $blockchain-dark-blue;
+        }
+
+        &.error {
+            outline: 1px solid $blockchain-red;
+            background: rgba(224, 19, 59, .1);
+        }
+    }
+
+    input {
+        height: 57px;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button, {
+        -webkit-appearance: none;
+    }
+
+    .errorMessage {
+        color: $blockchain-red;
+    }
+}
