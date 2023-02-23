@@ -3,12 +3,9 @@ import {Container, Row, Col} from "react-bootstrap";
 import './App.css';
 import Navigation from "./components/navigation/navigation";
 import Header from "./components/header/header";
-import Input from "./components/input/input";
-import Checkbox from "./components/checkbox/checkbox";
-import css from './app-styles.module.scss';
-import classNames from "classnames";
-import Button from "./components/button/button";
 import RegisterCar from "./modules/register-car/register-car";
+import GreetingExample from "./modules/greeting-example/greeting-example";
+
 
 function App() {
     const [selectedOption, setSelectedOption] = useState<string>("register-car");
@@ -25,14 +22,15 @@ function App() {
                     <Col>
                         <Navigation
                             className="mt-5"
-                            options={["register-car", "transfer-car"]}
+                            options={["Register Car", "Transfer Car", "Greeting Example"]}
                             selectedOption={selectedOption}
                             onClickOption={handleClickOption}
                         />
                     </Col>
                 </Row>
-                {selectedOption === "register-car" &&  <RegisterCar/>}
-                {selectedOption === "transfer-car" && <p>This is the transfer page</p>}
+                {selectedOption === "Register Car" &&  <RegisterCar/>}
+                {selectedOption === "Transfer Car" && <p>This is the transfer page</p>}
+                {selectedOption === "Greeting Example" && <GreetingExample/>}
             </Container>
         </>
     );

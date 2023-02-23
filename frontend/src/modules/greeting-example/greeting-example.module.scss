@@ -1,0 +1,14 @@
+.wrapper {
+    display: flex;
+    justify-content: center;
+
+    .greetingDiv {
+        width: 500px;
+
+        .buttonsDiv {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+}
+
