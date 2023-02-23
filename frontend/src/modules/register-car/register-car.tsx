@@ -7,6 +7,10 @@ import Checkbox from "../../components/checkbox/checkbox";
 import Button from "../../components/button/button";
 import {Car} from "../../interfaces/car";
 import {ChangeEventType} from "../../types/global.types";
+import ethers from "ethers";
+import CarOwnership from "../../artifacts/contracts/carownership.sol/CarOwnership.json";
+
+const contractAddress = "0x08Ec1a7323e16D86a42B136cFd36590Ed5f8f979";
 
 const RegisterCar: FC = () => {
     const [newCar, setNewCar] = useState<Car>({
@@ -21,9 +25,40 @@ const RegisterCar: FC = () => {
         isForSale: false
     });
 
-    const handleSubmit = (event: React.SyntheticEvent) => {
+    const requestAccount = async () => {
+        await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
+    }
+
+    const handleSubmit = async (event: React.SyntheticEvent) => {
         event.preventDefault();
-        console.log(newCar);
+
+        // if Metamask exists
+        if (typeof (window as any).ethereum !== "undefined") {
+            await requestAccount();
+
+            const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+            const signer = provider.getSigner();
+
+            const contract = new ethers.Contract(contractAddress, CarOwnership.abi, signer);
+            const transaction = await contract.createCar(
+                newCar.chassisNumber, newCar.mileage, newCar.price, newCar.licensePlate,
+                newCar.brand, newCar.carType, newCar.colour, newCar.pictures, newCar.isForSale
+            );
+            await transaction.wait();
+        }
+    }
+
+    const getCarFromBlockchain = async () => {
+        if ((window as any).ethereum !== "undefined") {
+            const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+            const contract = new ethers.Contract(contractAddress, CarOwnership.abi, provider);
+            try {
+                const data = await contract.getCar(0);
+                console.log("data: ", data);
+            } catch (error) {
+                console.log('Error: ', error);
+            }
+        }
     }
 
     const handleChassisChange = (event: ChangeEventType) => {
@@ -143,6 +178,7 @@ const RegisterCar: FC = () => {
                                     />
                                 </div>
                                 <Button type="submit">Submit</Button>
+                                <Button onClick={getCarFromBlockchain} type="button" className="mt-2">Get First Car</Button>
                             </div>
                         </Col>
                     </Row>
