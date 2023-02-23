@@ -8,7 +8,9 @@ import {ChangeEventType} from "../../types/global.types";
 import Greeter from './../../artifacts/contracts/Greeter.sol/Greeter.json';
 const ethers = require('ethers');
 
-const greeterAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+// credit to youtube toturial: https://www.youtube.com/watch?v=nNUpA0d6CFo
+
+const greeterAddress = "0x1ee4e6726fE97CaF85512733b02157032eCeA838";
 
 const GreetingExample: FC = () => {
     const [greetingMessage, setGreetingMessage] = useState<string>("");
