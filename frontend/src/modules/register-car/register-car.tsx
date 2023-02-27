@@ -11,10 +11,11 @@ import ethers from "ethers";
 import CarOwnership from "../../artifacts/contracts/carownership.sol/CarOwnership.json";
 import CarList from "../../components/car-list/car-list";
 
-const contractAddress = "0x9beb42AdBF0b49Dd46Fc64eF1C56f6F85ECe8475";
+const contractAddress = "0x6896360881678219880A6AAc75736330AB25D2Ed";
 
 const RegisterCar: FC = () => {
     const [newCar, setNewCar] = useState<Car>({
+        id: 0,
         chassisNumber: 0,
         mileage: 0,
         price: 0,
@@ -58,9 +59,11 @@ const RegisterCar: FC = () => {
             const contract = new ethers.Contract(contractAddress, CarOwnership.abi, provider);
             try {
                 const data: Car[] = await contract.getAllCarsForOwner("0xf31ebeE5Da42D0068871edF25D42611D5Afa8F6a");
+                console.log(data);
                 const newCars: Car[] = [];
                 data.forEach((c: Car) => {
                     const car: Car = {
+                        id: c.id,
                         chassisNumber: c.chassisNumber,
                         mileage: c.mileage,
                         price: c.price,
@@ -79,6 +82,20 @@ const RegisterCar: FC = () => {
             }
         }
     };
+
+    const deleteCar = async () => {
+        if (activeCar && (window as any).ethereum !== "undefined") {
+            const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(contractAddress, CarOwnership.abi, signer);
+            try {
+                await contract.deleteCar(activeCar.id)
+                getCarsFromBlockchain();
+            } catch (error) {
+                console.log('Error: ', error);
+            }
+        }
+    }
 
     const handleChassisChange = (event: ChangeEventType) => {
         setNewCar((prevState) => {
@@ -126,6 +143,14 @@ const RegisterCar: FC = () => {
         setNewCar((prevState) => {
             return {...prevState, isForSale: !newCar.isForSale}
         })
+    }
+
+    const handleClickCar = (car: Car) => {
+        if (activeCar && activeCar.id === car.id) {
+            setActiveCar(undefined);
+        } else {
+            setActiveCar(car);
+        }
     }
 
     useEffect(() => {
@@ -208,7 +233,8 @@ const RegisterCar: FC = () => {
                     <h2 className={classNames(css.title, "mt-3")}>Your cars</h2>
                     <Row>
                         <Col>
-                            <CarList activeCar={activeCar} onClickCard={(car) => setActiveCar(car)} cars={cars}/>
+                            <CarList activeCar={activeCar} onClickCar={handleClickCar} cars={cars}/>
+                            {cars.length > 0 && <Button disabled={!activeCar} type="button" onClick={deleteCar}>Delete</Button>}
                         </Col>
                     </Row>
                 </div>

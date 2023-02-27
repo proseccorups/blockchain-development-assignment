@@ -4,6 +4,7 @@
     padding: .5rem;
     margin-bottom: .75rem;
     width: 100%;
+    cursor: pointer;
 
     .content {
         width: 100%;
@@ -38,13 +39,7 @@
         padding: 0;
     }
 
-    &:hover {
-        cursor: pointer;
-        outline: 2px solid $blockchain-light-blue;
-    }
-
     &.active {
-        transition: outline .1s;
         outline: 6px solid $blockchain-light-blue;
     }
 

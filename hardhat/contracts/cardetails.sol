@@ -13,6 +13,7 @@ contract CarDetails is Ownable {
     event NewCar(Car car);
 
     struct Car {
+        uint32 id;
         uint32 chassisNumber;
         uint32 mileage;
         uint32 price;
@@ -35,9 +36,10 @@ contract CarDetails is Ownable {
     }
 
     function createCar(uint32 _chassisNumber, uint32 _mileage, uint32 _price, string memory _licensePlate, string memory _brand, string memory _carType, string memory _colour, string[] memory _pictures, bool _isForSale) external {
-        Car memory newCar = Car(_chassisNumber, _mileage, _price, _licensePlate, _brand, _carType, _colour, _pictures, _isForSale);
+        Car memory newCar = Car(0, _chassisNumber, _mileage, _price, _licensePlate, _brand, _carType, _colour, _pictures, _isForSale);
         cars.push(newCar);
-        uint id = cars.length - 1;
+        uint32 id = uint32(cars.length - 1);
+        newCar.id = id;
         carToOwner[id] = msg.sender;
         ownerCarCount[msg.sender] = ownerCarCount[msg.sender].add(1);
         emit NewCar(newCar);
@@ -62,6 +64,14 @@ contract CarDetails is Ownable {
             }
         }
         return result;
+    }
+
+    function deleteCar(uint32 _carId) external onlyOwnerOf(_carId) {
+        for (uint i = 0; i < cars.length; i++) {
+            if (cars[i].id == _carId) {
+                delete cars[i];
+            }
+        }
     }
 
     function toggleSaleState(uint _carId) external onlyOwner {
