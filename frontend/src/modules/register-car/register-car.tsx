@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {Col, Row} from "react-bootstrap";
 import Input from "../../components/input/input";
 import classNames from "classnames";
@@ -10,9 +10,8 @@ import {ChangeEventType} from "../../types/global.types";
 import ethers from "ethers";
 import CarOwnership from "../../artifacts/contracts/carownership.sol/CarOwnership.json";
 import CarList from "../../components/car-list/car-list";
-import {DUMMY_CARS} from "../../__mocks__/car-mocks";
 
-const contractAddress = "0x2Ad2FfEDC6cb96bCf878affcFe3dD3E68D569Cb6";
+const contractAddress = "0x9beb42AdBF0b49Dd46Fc64eF1C56f6F85ECe8475";
 
 const RegisterCar: FC = () => {
     const [newCar, setNewCar] = useState<Car>({
@@ -26,6 +25,8 @@ const RegisterCar: FC = () => {
         pictures: [],
         isForSale: false
     });
+    const [cars, setCars] = useState<Car[]>([]);
+    const [activeCar, setActiveCar] = useState<Car>();
 
     const requestAccount = async () => {
         await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
@@ -47,21 +48,37 @@ const RegisterCar: FC = () => {
                 newCar.brand, newCar.carType, newCar.colour, newCar.pictures, newCar.isForSale
             );
             await transaction.wait();
+            getCarsFromBlockchain();
         }
     }
 
-    const getCarFromBlockchain = async () => {
+    const getCarsFromBlockchain = async () => {
         if ((window as any).ethereum !== "undefined") {
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
             const contract = new ethers.Contract(contractAddress, CarOwnership.abi, provider);
             try {
-                const data = await contract.getCar(0);
-                console.log("data: ", data);
+                const data: Car[] = await contract.getAllCarsForOwner("0xf31ebeE5Da42D0068871edF25D42611D5Afa8F6a");
+                const newCars: Car[] = [];
+                data.forEach((c: Car) => {
+                    const car: Car = {
+                        chassisNumber: c.chassisNumber,
+                        mileage: c.mileage,
+                        price: c.price,
+                        licensePlate: c.licensePlate,
+                        brand: c.brand,
+                        carType: c.carType,
+                        colour: c.colour,
+                        pictures: [],
+                        isForSale: c.isForSale
+                    }
+                    newCars.push(car);
+                })
+                setCars((newCars));
             } catch (error) {
                 console.log('Error: ', error);
             }
         }
-    }
+    };
 
     const handleChassisChange = (event: ChangeEventType) => {
         setNewCar((prevState) => {
@@ -110,6 +127,10 @@ const RegisterCar: FC = () => {
             return {...prevState, isForSale: !newCar.isForSale}
         })
     }
+
+    useEffect(() => {
+        getCarsFromBlockchain()
+    }, [])
 
     return (
         <form onSubmit={handleSubmit}>
@@ -181,14 +202,13 @@ const RegisterCar: FC = () => {
                                     />
                                 </div>
                                 <Button type="submit">Submit</Button>
-                                <Button onClick={getCarFromBlockchain} type="button" className="mt-2">Get First Car</Button>
                             </div>
                         </Col>
                     </Row>
                     <h2 className={classNames(css.title, "mt-3")}>Your cars</h2>
                     <Row>
                         <Col>
-                            <CarList cars={DUMMY_CARS}/>
+                            <CarList activeCar={activeCar} onClickCard={(car) => setActiveCar(car)} cars={cars}/>
                         </Col>
                     </Row>
                 </div>

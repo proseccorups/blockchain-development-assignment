@@ -1,6 +1,9 @@
+@import './../../styles/colors.scss';
+
 .root {
     padding: .5rem;
-    max-width: 600px;
+    margin-bottom: .75rem;
+    width: 100%;
 
     .content {
         width: 100%;
@@ -20,13 +23,29 @@
         }
 
         .carDetails {
+            width: 100%;
             display: flex;
+            justify-content: center;
+
+            .carDetailsLeft, .carDetailsRight {
+                width: 50%;
+            }
         }
     }
 
     p {
         margin: 0;
         padding: 0;
+    }
+
+    &:hover {
+        cursor: pointer;
+        outline: 2px solid $blockchain-light-blue;
+    }
+
+    &.active {
+        transition: outline .1s;
+        outline: 6px solid $blockchain-light-blue;
     }
 
 }
@@ -37,6 +56,10 @@
         .content {
             .carDetails {
                 flex-direction: column;
+
+                .carDetailsLeft, .carDetailsRight {
+                    width: 100%;
+                }
             }
 
             .imageDiv {
@@ -48,7 +71,7 @@
     }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 420px) {
     .root {
         width: 100%;
         .content {

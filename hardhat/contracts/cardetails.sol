@@ -13,7 +13,7 @@ contract CarDetails is Ownable {
     event NewCar(Car car);
 
     struct Car {
-        uint chassisNumber;
+        uint32 chassisNumber;
         uint32 mileage;
         uint32 price;
         string licensePlate;
@@ -34,7 +34,7 @@ contract CarDetails is Ownable {
         _;
     }
 
-    function createCar(uint _chassisNumber, uint32 _mileage, uint32 _price, string memory _licensePlate, string memory _brand, string memory _carType, string memory _colour, string[] memory _pictures, bool _isForSale) external {
+    function createCar(uint32 _chassisNumber, uint32 _mileage, uint32 _price, string memory _licensePlate, string memory _brand, string memory _carType, string memory _colour, string[] memory _pictures, bool _isForSale) external {
         Car memory newCar = Car(_chassisNumber, _mileage, _price, _licensePlate, _brand, _carType, _colour, _pictures, _isForSale);
         cars.push(newCar);
         uint id = cars.length - 1;
