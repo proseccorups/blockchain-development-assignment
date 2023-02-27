@@ -52,6 +52,18 @@ contract CarDetails is Ownable {
         return cars[_carId];
     }
 
+    function getAllCarsForOwner(address _owner) external view returns (Car[] memory) {
+        Car[] memory result = new Car[](ownerCarCount[_owner]);
+        uint counter = 0;
+        for (uint i = 0; i < cars.length; i++) {
+            if (carToOwner[i] == _owner) {
+                result[counter] = cars[i];
+                counter++;
+            }
+        }
+        return result;
+    }
+
     function toggleSaleState(uint _carId) external onlyOwner {
         cars[_carId].isForSale = !cars[_carId].isForSale;
     }
