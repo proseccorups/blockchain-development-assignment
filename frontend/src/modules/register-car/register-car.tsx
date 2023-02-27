@@ -9,8 +9,10 @@ import {Car} from "../../interfaces/car";
 import {ChangeEventType} from "../../types/global.types";
 import ethers from "ethers";
 import CarOwnership from "../../artifacts/contracts/carownership.sol/CarOwnership.json";
+import CarList from "../../components/car-list/car-list";
+import {DUMMY_CARS} from "../../__mocks__/car-mocks";
 
-const contractAddress = "0x08Ec1a7323e16D86a42B136cFd36590Ed5f8f979";
+const contractAddress = "0x2Ad2FfEDC6cb96bCf878affcFe3dD3E68D569Cb6";
 
 const RegisterCar: FC = () => {
     const [newCar, setNewCar] = useState<Car>({
@@ -110,9 +112,10 @@ const RegisterCar: FC = () => {
     }
 
     return (
-        <Row>
-            <Col>
-                <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
+            <div className={css.center}>
+                <div className={css.limitWidth}>
+                    <h2 className={classNames(css.title, "mt-3")}>Submit car details</h2>
                     <Row className="mt-3">
                         <Col sm={12} md={6} lg={6}>
                             <Input
@@ -182,9 +185,15 @@ const RegisterCar: FC = () => {
                             </div>
                         </Col>
                     </Row>
-                </form>
-            </Col>
-        </Row>
+                    <h2 className={classNames(css.title, "mt-3")}>Your cars</h2>
+                    <Row>
+                        <Col>
+                            <CarList cars={DUMMY_CARS}/>
+                        </Col>
+                    </Row>
+                </div>
+            </div>
+        </form>
     )
 }
 

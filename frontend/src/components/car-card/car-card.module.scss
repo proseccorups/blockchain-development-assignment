@@ -1,0 +1,66 @@
+.root {
+    padding: .5rem;
+    max-width: 600px;
+
+    .content {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        align-content: center;
+
+        .imageDiv {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+
+            .image {
+                height: 120px;
+            }
+        }
+
+        .carDetails {
+            display: flex;
+        }
+    }
+
+    p {
+        margin: 0;
+        padding: 0;
+    }
+
+}
+
+@media (max-width: 520px) {
+    .root {
+        width: 100%;
+        .content {
+            .carDetails {
+                flex-direction: column;
+            }
+
+            .imageDiv {
+                .image {
+                    height: 100px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 400px) {
+    .root {
+        width: 100%;
+        .content {
+            .carDetails {
+                flex-direction: column;
+            }
+
+            .imageDiv {
+                .image {
+                    height: 75px;
+                }
+            }
+        }
+    }
+}

@@ -1,3 +1,18 @@
+@import './../../styles/colors.scss';
+
+.limitWidth {
+    width: 800px;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+}
+
+.title {
+    color: $blockchain-dark-blue;
+}
+
 .forSaleDiv {
     display: flex;
     justify-content: center;

@@ -22,7 +22,7 @@ function App() {
                     <Col>
                         <Navigation
                             className="mt-5"
-                            options={["Register Car", "Transfer Car", "Greeting Example"]}
+                            options={["Register Car", "Transfer Car"]}
                             selectedOption={selectedOption}
                             onClickOption={handleClickOption}
                         />
@@ -30,7 +30,6 @@ function App() {
                 </Row>
                 {selectedOption === "Register Car" &&  <RegisterCar/>}
                 {selectedOption === "Transfer Car" && <p>This is the transfer page</p>}
-                {selectedOption === "Greeting Example" && <GreetingExample/>}
             </Container>
         </>
     );
