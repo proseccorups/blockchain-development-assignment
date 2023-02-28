@@ -27,20 +27,18 @@ contract CarDetails is Ownable {
 
     Car[] public cars;
 
-    mapping(uint => address) public carToOwner;
+    mapping(uint32 => address) public carToOwner;
     mapping(address => uint) ownerCarCount;
 
-    modifier onlyOwnerOf(uint _carId) {
+    modifier onlyOwnerOf(uint32 _carId) {
         require(msg.sender == carToOwner[_carId], "That's not yo car");
         _;
     }
 
     function createCar(uint32 _chassisNumber, uint32 _mileage, uint32 _price, string memory _licensePlate, string memory _brand, string memory _carType, string memory _colour, string[] memory _pictures, bool _isForSale) external {
-        Car memory newCar = Car(0, _chassisNumber, _mileage, _price, _licensePlate, _brand, _carType, _colour, _pictures, _isForSale);
+        Car memory newCar = Car(uint32(cars.length), _chassisNumber, _mileage, _price, _licensePlate, _brand, _carType, _colour, _pictures, _isForSale);
         cars.push(newCar);
-        uint32 id = uint32(cars.length - 1);
-        newCar.id = id;
-        carToOwner[id] = msg.sender;
+        carToOwner[newCar.id] = msg.sender;
         ownerCarCount[msg.sender] = ownerCarCount[msg.sender].add(1);
         emit NewCar(newCar);
     }
@@ -58,7 +56,7 @@ contract CarDetails is Ownable {
         Car[] memory result = new Car[](ownerCarCount[_owner]);
         uint counter = 0;
         for (uint i = 0; i < cars.length; i++) {
-            if (carToOwner[i] == _owner) {
+            if (carToOwner[uint32(i)] == _owner) {
                 result[counter] = cars[i];
                 counter++;
             }

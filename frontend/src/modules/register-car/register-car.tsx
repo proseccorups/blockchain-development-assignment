@@ -11,7 +11,7 @@ import ethers from "ethers";
 import CarOwnership from "../../artifacts/contracts/carownership.sol/CarOwnership.json";
 import CarList from "../../components/car-list/car-list";
 
-const contractAddress = "0x6896360881678219880A6AAc75736330AB25D2Ed";
+const contractAddress = "0x555ab6AD1cf87c1F7c6cE550BAe616874d2cF768";
 
 const RegisterCar: FC = () => {
     const [newCar, setNewCar] = useState<Car>({
@@ -29,6 +29,9 @@ const RegisterCar: FC = () => {
     const [cars, setCars] = useState<Car[]>([]);
     const [activeCar, setActiveCar] = useState<Car>();
 
+    const [mileageLoading, setMileageLoading] = useState<boolean>(false);
+    const [addCarLoading, setAddCarLoading] = useState<boolean>(false);
+
     const requestAccount = async () => {
         await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
     }
@@ -38,6 +41,7 @@ const RegisterCar: FC = () => {
 
         // if Metamask exists
         if (typeof (window as any).ethereum !== "undefined") {
+            setAddCarLoading(true);
             await requestAccount();
 
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
@@ -51,6 +55,7 @@ const RegisterCar: FC = () => {
             await transaction.wait();
             getCarsFromBlockchain();
         }
+        setAddCarLoading(false);
     }
 
     const getCarsFromBlockchain = async () => {
@@ -58,8 +63,7 @@ const RegisterCar: FC = () => {
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
             const contract = new ethers.Contract(contractAddress, CarOwnership.abi, provider);
             try {
-                const data: Car[] = await contract.getAllCarsForOwner("0xf31ebeE5Da42D0068871edF25D42611D5Afa8F6a");
-                console.log(data);
+                const data: Car[] = await contract.getAllCarsForOwner("0x9c5EE71170c8f7F2343774dcb47Db9E542ba7331");
                 const newCars: Car[] = [];
                 data.forEach((c: Car) => {
                     const car: Car = {
@@ -82,20 +86,6 @@ const RegisterCar: FC = () => {
             }
         }
     };
-
-    const deleteCar = async () => {
-        if (activeCar && (window as any).ethereum !== "undefined") {
-            const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-            const signer = provider.getSigner();
-            const contract = new ethers.Contract(contractAddress, CarOwnership.abi, signer);
-            try {
-                await contract.deleteCar(activeCar.id)
-                getCarsFromBlockchain();
-            } catch (error) {
-                console.log('Error: ', error);
-            }
-        }
-    }
 
     const handleChassisChange = (event: ChangeEventType) => {
         setNewCar((prevState) => {
@@ -153,9 +143,27 @@ const RegisterCar: FC = () => {
         }
     }
 
+    const handleUpdateMileage = async () => {
+        if (activeCar && (window as any).ethereum !== "undefined") {
+            setMileageLoading(true);
+            const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(contractAddress, CarOwnership.abi, signer);
+            try {
+                await contract.updateMileage(activeCar.id, newCar.mileage);
+                getCarsFromBlockchain();
+            } catch (error) {
+                console.log('Error: ', error);
+            }
+            setMileageLoading(false);
+        }
+    }
+
     useEffect(() => {
         getCarsFromBlockchain()
     }, [])
+
+    console.log(cars);
 
     return (
         <form onSubmit={handleSubmit}>
@@ -226,7 +234,7 @@ const RegisterCar: FC = () => {
                                         onClick={handleToggleForSale}
                                     />
                                 </div>
-                                <Button type="submit">Submit</Button>
+                                <Button loading={addCarLoading} type="submit">Submit</Button>
                             </div>
                         </Col>
                     </Row>
@@ -234,7 +242,7 @@ const RegisterCar: FC = () => {
                     <Row>
                         <Col>
                             <CarList activeCar={activeCar} onClickCar={handleClickCar} cars={cars}/>
-                            {cars.length > 0 && <Button disabled={!activeCar} type="button" onClick={deleteCar}>Delete</Button>}
+                            {cars.length > 0 && <Button loading={mileageLoading} disabled={!activeCar} type="button" onClick={handleUpdateMileage}>Update Mileage</Button>}
                         </Col>
                     </Row>
                 </div>
