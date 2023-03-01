@@ -1,0 +1,14 @@
+@import './../../styles/colors.scss';
+
+.root {
+    display: flex;
+    justify-content: center;
+
+    .limitWidth {
+        width: 800px;
+    }
+
+    .title {
+        color: $blockchain-dark-blue;
+    }
+}

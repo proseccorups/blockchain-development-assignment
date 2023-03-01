@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "./ownable.sol";
 import "./safemath.sol";
@@ -62,6 +62,32 @@ contract CarDetails is Ownable {
             }
         }
         return result;
+    }
+
+    function _calculateForSaleCarCount() private view returns (uint) {
+        uint result = 0;
+        for (uint i = 0; i < cars.length; i++) {
+            if (carToOwner[uint32(i)] != msg.sender && cars[i].isForSale) {
+                result++;
+            }
+        }
+        return result;
+    }
+
+    function getCarsForSale() external view returns (Car[] memory) {
+        Car[] memory result = new Car[](_calculateForSaleCarCount());
+        uint counter = 0;
+        for (uint i = 0; i < cars.length; i++) {
+            if (carToOwner[uint32(i)] != msg.sender && cars[i].isForSale) {
+                result[counter] = cars[i];
+                counter++;
+            }
+        }
+        return result;
+    }
+
+    function getCarOwner(uint32 _carId) external view returns (address ownerAddress) {
+        return carToOwner[_carId];
     }
 
     function deleteCar(uint32 _carId) external onlyOwnerOf(_carId) {

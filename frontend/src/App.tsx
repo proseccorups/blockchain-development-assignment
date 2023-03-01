@@ -4,6 +4,7 @@ import './App.css';
 import Navigation from "./components/navigation/navigation";
 import Header from "./components/header/header";
 import RegisterCar from "./modules/register-car/register-car";
+import PurchaseCar from "./modules/purchase-car/purchase-car";
 
 function App() {
     const [selectedOption, setSelectedOption] = useState<string>("register-car");
@@ -27,7 +28,7 @@ function App() {
                     </Col>
                 </Row>
                 {selectedOption === "Register Car" &&  <RegisterCar/>}
-                {selectedOption === "Purchase Car" && <p>This is the transfer page</p>}
+                {selectedOption === "Purchase Car" && <PurchaseCar/>}
             </Container>
         </>
     );

@@ -7,11 +7,10 @@ import Checkbox from "../../components/checkbox/checkbox";
 import Button from "../../components/button/button";
 import {Car} from "../../interfaces/car";
 import {ChangeEventType} from "../../types/global.types";
-import ethers from "ethers";
 import CarOwnership from "../../artifacts/contracts/carownership.sol/CarOwnership.json";
 import CarList from "../../components/car-list/car-list";
-
-const contractAddress = "0x555ab6AD1cf87c1F7c6cE550BAe616874d2cF768";
+import {CAR_OWNERSHIP_ADDRESS} from "../../constants/addresses";
+import ethers from 'ethers';
 
 const RegisterCar: FC = () => {
     const [newCar, setNewCar] = useState<Car>({
@@ -32,6 +31,8 @@ const RegisterCar: FC = () => {
     const [mileageLoading, setMileageLoading] = useState<boolean>(false);
     const [addCarLoading, setAddCarLoading] = useState<boolean>(false);
 
+    const [publicKey, setPublicKey] = useState<string>("");
+
     const requestAccount = async () => {
         await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
     }
@@ -45,9 +46,9 @@ const RegisterCar: FC = () => {
             await requestAccount();
 
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-            const signer = provider.getSigner();
+            const signer = provider.getSigner(publicKey);
 
-            const contract = new ethers.Contract(contractAddress, CarOwnership.abi, signer);
+            const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             const transaction = await contract.createCar(
                 newCar.chassisNumber, newCar.mileage, newCar.price, newCar.licensePlate,
                 newCar.brand, newCar.carType, newCar.colour, newCar.pictures, newCar.isForSale
@@ -61,9 +62,10 @@ const RegisterCar: FC = () => {
     const getCarsFromBlockchain = async () => {
         if ((window as any).ethereum !== "undefined") {
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-            const contract = new ethers.Contract(contractAddress, CarOwnership.abi, provider);
+            const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, provider);
+
             try {
-                const data: Car[] = await contract.getAllCarsForOwner("0x9c5EE71170c8f7F2343774dcb47Db9E542ba7331");
+                const data: Car[] = await contract.getAllCarsForOwner(publicKey);
                 const newCars: Car[] = [];
                 data.forEach((c: Car) => {
                     const car: Car = {
@@ -80,6 +82,7 @@ const RegisterCar: FC = () => {
                     }
                     newCars.push(car);
                 })
+                console.log(newCars);
                 setCars((newCars));
             } catch (error) {
                 console.log('Error: ', error);
@@ -148,10 +151,10 @@ const RegisterCar: FC = () => {
             setMileageLoading(true);
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
             const signer = provider.getSigner();
-            const contract = new ethers.Contract(contractAddress, CarOwnership.abi, signer);
+            const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             try {
                 await contract.updateMileage(activeCar.id, newCar.mileage);
-                getCarsFromBlockchain();
+                // getCarsFromBlockchain();
             } catch (error) {
                 console.log('Error: ', error);
             }
@@ -161,14 +164,19 @@ const RegisterCar: FC = () => {
 
     useEffect(() => {
         getCarsFromBlockchain()
-    }, [])
-
-    console.log(cars);
+    }, [publicKey])
 
     return (
         <form onSubmit={handleSubmit}>
             <div className={css.center}>
                 <div className={css.limitWidth}>
+                    <Input
+                        className={classNames(css.publicKey, "mt-3")}
+                        valid={true}
+                        disabled={false}
+                        label="Public key:"
+                        onChange={(event: ChangeEventType) => setPublicKey(event.target.value)}
+                    />
                     <h2 className={classNames(css.title, "mt-3")}>Submit car details</h2>
                     <Row className="mt-3">
                         <Col sm={12} md={6} lg={6}>
@@ -234,7 +242,7 @@ const RegisterCar: FC = () => {
                                         onClick={handleToggleForSale}
                                     />
                                 </div>
-                                <Button loading={addCarLoading} type="submit">Submit</Button>
+                                <Button disabled={publicKey === ""} loading={addCarLoading} type="submit">Submit</Button>
                             </div>
                         </Col>
                     </Row>
