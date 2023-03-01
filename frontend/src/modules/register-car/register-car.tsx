@@ -82,7 +82,6 @@ const RegisterCar: FC = () => {
                     }
                     newCars.push(car);
                 })
-                console.log(newCars);
                 setCars((newCars));
             } catch (error) {
                 console.log('Error: ', error);

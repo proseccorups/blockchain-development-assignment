@@ -3,6 +3,7 @@ pragma solidity ^0.8.18;
 
 import "./ownable.sol";
 import "./safemath.sol";
+import "hardhat/console.sol";
 
 contract CarDetails is Ownable {
 
@@ -52,8 +53,18 @@ contract CarDetails is Ownable {
         return cars[_carId];
     }
 
-    function getAllCarsForOwner(address _owner) external view returns (Car[] memory) {
-        Car[] memory result = new Car[](ownerCarCount[_owner]);
+    function _getOwnerCarCount(address _owner) private view returns (uint) {
+        uint result = 0;
+        for (uint i = 0; i < cars.length; i++) {
+            if (carToOwner[uint32(cars[i].id)] == _owner) {
+                result++;
+            }
+        }
+        return result;
+    }
+
+    function getAllCarsForOwner(address _owner) external view  returns (Car[] memory) {
+        Car[] memory result = new Car[](_getOwnerCarCount(_owner));
         uint counter = 0;
         for (uint i = 0; i < cars.length; i++) {
             if (carToOwner[uint32(i)] == _owner) {
@@ -61,6 +72,7 @@ contract CarDetails is Ownable {
                 counter++;
             }
         }
+        console.log("result length: ", result.length);
         return result;
     }
 
