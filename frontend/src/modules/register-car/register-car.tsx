@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {ChangeEvent, FC, useEffect, useState} from 'react';
 import {Col, Row} from "react-bootstrap";
 import Input from "../../components/input/input";
 import classNames from "classnames";
@@ -6,11 +6,18 @@ import css from './register-car.module.scss';
 import Checkbox from "../../components/checkbox/checkbox";
 import Button from "../../components/button/button";
 import {Car} from "../../interfaces/car";
-import {ChangeEventType} from "../../types/global.types";
 import CarOwnership from "../../artifacts/contracts/carownership.sol/CarOwnership.json";
 import CarList from "../../components/car-list/car-list";
 import {CAR_OWNERSHIP_ADDRESS} from "../../constants/addresses";
 import ethers from 'ethers';
+import { create as ipfsHttpClient } from 'ipfs-http-client';
+import {Buffer} from "buffer";
+
+const ipfs = ipfsHttpClient({
+    host: 'localhost',
+    port: 5001,
+    protocol: 'http',
+});
 
 const RegisterCar: FC = () => {
     const [newCar, setNewCar] = useState<Car>({
@@ -32,6 +39,9 @@ const RegisterCar: FC = () => {
     const [addCarLoading, setAddCarLoading] = useState<boolean>(false);
 
     const [publicKey, setPublicKey] = useState<string>("");
+
+    const [ipfsFile, setIpfsFile] = useState<File | undefined>(undefined);
+    const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
     const requestAccount = async () => {
         await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
@@ -56,7 +66,37 @@ const RegisterCar: FC = () => {
             await transaction.wait();
             getCarsFromBlockchain();
         }
+        const form: HTMLFormElement = event.target as HTMLFormElement;
+        form.reset();
         setAddCarLoading(false);
+    }
+
+    const retrieveFile = (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const data = event.target.files[0];
+            const reader = new window.FileReader();
+            reader.readAsArrayBuffer(data);
+            reader.onloadend = () => {
+                // @ts-ignore
+                setIpfsFile(Buffer(reader.result));
+            }
+        }
+
+        event.preventDefault();
+    }
+
+    const submitFile = async () => {
+        if (ipfsFile) {
+            try {
+                const result = await ipfs.add(ipfsFile);
+                setUploadedImages(prevState => {
+                    return [...prevState, `https://ipfs.io/ipfs/${result.path}`]
+                })
+            } catch (error: any) {
+                console.log(error.message);
+            }
+        }
+
     }
 
     const getCarsFromBlockchain = async () => {
@@ -89,43 +129,43 @@ const RegisterCar: FC = () => {
         }
     };
 
-    const handleChassisChange = (event: ChangeEventType) => {
+    const handleChassisChange = (event: ChangeEvent<HTMLInputElement>) => {
         setNewCar((prevState) => {
             return {...prevState, chassisNumber: +event.target.value}
         })
     }
 
-    const handleMileageChange = (event: ChangeEventType) => {
+    const handleMileageChange = (event: ChangeEvent<HTMLInputElement>) => {
         setNewCar((prevState) => {
             return {...prevState, mileage: +event.target.value}
         })
     }
 
-    const handlePriceChange = (event: ChangeEventType) => {
+    const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
         setNewCar((prevState) => {
             return {...prevState, price: +event.target.value}
         })
     }
 
-    const handleLicensePlateChange = (event: ChangeEventType) => {
+    const handleLicensePlateChange = (event: ChangeEvent<HTMLInputElement>) => {
         setNewCar((prevState) => {
             return {...prevState, licensePlate: event.target.value}
         })
     }
 
-    const handleBrandChange = (event: ChangeEventType) => {
+    const handleBrandChange = (event: ChangeEvent<HTMLInputElement>) => {
         setNewCar((prevState) => {
             return {...prevState, brand: event.target.value}
         })
     }
 
-    const handleCarTypeChange = (event: ChangeEventType) => {
+    const handleCarTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
         setNewCar((prevState) => {
             return {...prevState, carType: event.target.value}
         })
     }
 
-    const handleColourChange = (event: ChangeEventType) => {
+    const handleColourChange = (event: ChangeEvent<HTMLInputElement>) => {
         setNewCar((prevState) => {
             return {...prevState, colour: event.target.value}
         })
@@ -165,6 +205,10 @@ const RegisterCar: FC = () => {
         getCarsFromBlockchain()
     }, [publicKey])
 
+    useEffect(() => {
+        console.log(uploadedImages);
+    }, [uploadedImages])
+
     return (
         <form onSubmit={handleSubmit}>
             <div className={css.center}>
@@ -174,7 +218,7 @@ const RegisterCar: FC = () => {
                         valid={true}
                         disabled={false}
                         label="Public key:"
-                        onChange={(event: ChangeEventType) => setPublicKey(event.target.value)}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => setPublicKey(event.target.value)}
                     />
                     <h2 className={classNames(css.title, "mt-3")}>Submit car details</h2>
                     <Row className="mt-3">
@@ -233,16 +277,21 @@ const RegisterCar: FC = () => {
                                 className="mb-2"
                                 onChange={handleColourChange}
                             />
-                            <div>
-                                <div className={classNames(css.forSaleDiv, "mt-5")}>
-                                    <p className="me-2 mb-4">Is the car for sale?</p>
-                                    <Checkbox
-                                        checked={newCar.isForSale}
-                                        onClick={handleToggleForSale}
-                                    />
-                                </div>
-                                <Button disabled={publicKey === ""} loading={addCarLoading} type="submit">Submit</Button>
+                            <div className={classNames(css.forSaleDiv, "mt-5")}>
+                                <p className="me-2 mb-4">Is the car for sale?</p>
+                                <Checkbox
+                                    checked={newCar.isForSale}
+                                    onClick={handleToggleForSale}
+                                />
                             </div>
+                            <Input
+                                valid={true}
+                                disabled={false}
+                                type="file"
+                                onChange={retrieveFile}
+                            />
+                            <Button type="button" className="mb-3" onClick={submitFile}>Submit file</Button>
+                            <Button disabled={publicKey === ""} loading={addCarLoading} type="submit">Submit</Button>
                         </Col>
                     </Row>
                     <h2 className={classNames(css.title, "mt-3")}>Your cars</h2>

@@ -1,12 +1,11 @@
-import React, {FC, HTMLInputTypeAttribute, useState} from 'react';
+import React, {ChangeEvent, FC, HTMLInputTypeAttribute, useState} from 'react';
 import css from './input.module.scss';
 import classNames from "classnames";
-import {ChangeEventType} from "../../types/global.types";
 
 interface InputProps {
     label?: string;
     type?: HTMLInputTypeAttribute;
-    onChange?: (event: ChangeEventType) => void;
+    onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
     valid: boolean;
     disabled: boolean;
     value?: string;

@@ -1,10 +1,9 @@
-import React, {FC, useState} from 'react';
+import React, {ChangeEvent, FC, useState} from 'react';
 import { Row, Col } from 'react-bootstrap';
 import Button from "../../components/button/button";
 import Input from "../../components/input/input";
 import css from './greeting-example.module.scss';
 import classNames from "classnames";
-import {ChangeEventType} from "../../types/global.types";
 import Greeter from './../../artifacts/contracts/Greeter.sol/Greeter.json';
 const ethers = require('ethers');
 
@@ -65,7 +64,7 @@ const GreetingExample: FC = () => {
                             placeholder="Set a greeting here"
                             type="text"
                             className="mt-2"
-                            onChange={(event: ChangeEventType) => setGreetingMessage(event.target.value)}
+                            onChange={(event: ChangeEvent<HTMLInputElement>) => setGreetingMessage(event.target.value)}
                             value={greetingMessage}
                         />
                     </div>
