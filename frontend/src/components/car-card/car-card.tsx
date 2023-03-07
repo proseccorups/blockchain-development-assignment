@@ -66,7 +66,7 @@ const CarCard: FC<CarCardProps> = ({car, onClick, active, editable, updatePrice,
                             <div className={css.editDiv}>
                                 {!editMileageMode && <>
                                     <p><b>Mileage: </b>{car.mileage}</p>
-                                    <Pencil onClick={onClickEditMileage} className={classNames(css.editIcon, "ms-1")}/>
+                                    {editable && <Pencil onClick={onClickEditMileage} className={classNames(css.editIcon, "ms-1")}/>}
                                 </>
                                 }
                                 {editMileageMode && <>
@@ -80,7 +80,7 @@ const CarCard: FC<CarCardProps> = ({car, onClick, active, editable, updatePrice,
                             <div className={css.editDiv}>
                                 {!editPriceMode && <>
                                     <p><b>Price: </b>ETH {car.price}</p>
-                                    <Pencil onClick={onClickEditPrice} className={classNames(css.editIcon, "ms-1")}/>
+                                    {editable && <Pencil onClick={onClickEditPrice} className={classNames(css.editIcon, "ms-1")}/>}
                                 </>}
                                 {editPriceMode && <>
                                     <input

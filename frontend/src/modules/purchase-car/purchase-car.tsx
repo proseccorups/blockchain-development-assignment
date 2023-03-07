@@ -28,8 +28,6 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
             const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             const ownerAddress: string = await contract.getCarOwner(activeCar.id);
             const buyerAddress = await signer.getAddress();
-            console.log(ownerAddress);
-            console.log(buyerAddress);
             const transaction = await contract.transferFrom(ownerAddress, buyerAddress, activeCar.id);
             await transaction.wait();
             getCarsForSaleFromBlockchain();
