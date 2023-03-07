@@ -34,7 +34,7 @@ const RegisterCar: FC = () => {
         await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
     }
 
-    const handleSubmit = async () => {
+    const handleAddCar = async () => {
         // if Metamask exists
         if (typeof (window as any).ethereum !== "undefined") {
             setAddCarLoading(true);
@@ -82,7 +82,7 @@ const RegisterCar: FC = () => {
                         brand: c.brand,
                         carType: c.carType,
                         colour: c.colour,
-                        pictures: [],
+                        pictures: c.pictures,
                         isForSale: c.isForSale
                     }
                     newCars.push(car);
@@ -96,7 +96,6 @@ const RegisterCar: FC = () => {
 
     const handleClickCar = (car: Car) => {
         if (activeCar && activeCar.id === car.id) {
-            console.log(activeCar);
             setActiveCar(undefined);
         } else {
             setActiveCar(car);
@@ -111,7 +110,6 @@ const RegisterCar: FC = () => {
             const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             try {
                 await contract.updateMileage(activeCar.id, newCar.mileage);
-                // getCarsFromBlockchain();
             } catch (error) {
                 console.log('Error: ', error);
             }
@@ -123,8 +121,6 @@ const RegisterCar: FC = () => {
         getCarsFromBlockchain()
     }, [publicKey])
 
-    console.log(newCar);
-
     return (
         <div className={css.center}>
             <div className={css.limitWidth}>
@@ -132,7 +128,7 @@ const RegisterCar: FC = () => {
                     newCar={newCar}
                     changeCarValues={setNewCar}
                     changeIpfsFile={setIpfsFile}
-                    onSubmit={handleSubmit}
+                    onSubmit={handleAddCar}
                     onChangePublicKey={(key: string) => setPublicKey(key)}
                     loading={addCarLoading}
                     buttonDisabled={publicKey === ""}

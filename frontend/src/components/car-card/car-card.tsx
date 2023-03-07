@@ -15,7 +15,7 @@ const CarCard: FC<CarCardProps> = ({car, onClick, active}) => {
         <Card onClick={() => onClick(car)} className={classNames(css.root, active && css.active)}>
             <div className={css.content}>
                 <div className={css.imageDiv}>
-                    <img className={css.image} src={require("./../../assets/images/lamborgini.png")} alt="could not load"/>
+                    <img className={css.image} src={`http://localhost:8080/ipfs/${car.pictures[0]}`} alt="could not load"/>
                 </div>
                 <div className={css.carDetails}>
                     <div className={classNames(css.carDetailsRight, "me-3")} >
