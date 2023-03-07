@@ -4,6 +4,7 @@ import classNames from "classnames";
 
 interface InputProps {
     label?: string;
+    name?: string;
     type?: HTMLInputTypeAttribute;
     onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
     valid: boolean;
@@ -18,6 +19,7 @@ interface InputProps {
 // This input has 3 different forms, it can be used as a country select, a textarea or a regular input field depending on the props
 const Input: FC<InputProps> = ({
                                    label,
+                                   name,
                                    type,
                                    onChange,
                                    valid,
@@ -37,6 +39,7 @@ const Input: FC<InputProps> = ({
                 disabled={disabled}
                 onChange={onChange}
                 type={type}
+                name={name}
                 className={classNames((!valid && blurred) && css.error, inputClassName && inputClassName)}
                 onBlur={() => setBlurred(true)}
                 onFocus={() => setBlurred(false)}

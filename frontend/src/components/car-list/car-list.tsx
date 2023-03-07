@@ -13,7 +13,12 @@ const CarList: FC<CarListProps> = ({cars, onClickCar, activeCar}) => {
     return (
         <div className={css.root}>
             {cars.map((car: Car) =>
-                <CarCard active={activeCar!! && activeCar.id === car.id} onClick={(car) => onClickCar(car)} key={car.licensePlate} car={car}/>
+                <CarCard
+                    active={activeCar!! && activeCar.id === car.id}
+                    onClick={(car) => onClickCar(car)}
+                    key={car.id}
+                    car={car}
+                />
             )}
         </div>
     );
