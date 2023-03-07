@@ -94,26 +94,30 @@ const RegisterCar: FC = () => {
         }
     };
 
-    const handleClickCar = (car: Car) => {
-        if (activeCar && activeCar.id === car.id) {
-            setActiveCar(undefined);
-        } else {
-            setActiveCar(car);
-        }
-    }
-
-    const handleUpdateMileage = async () => {
-        if (activeCar && (window as any).ethereum !== "undefined") {
-            setMileageLoading(true);
+    const handleUpdateMileage = async (carId: number, newMileage: number) => {
+        console.log("got here");
+        if ((window as any).ethereum !== "undefined") {
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
             const signer = provider.getSigner();
             const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             try {
-                await contract.updateMileage(activeCar.id, newCar.mileage);
+                await contract.updateMileage(carId, newMileage);
             } catch (error) {
                 console.log('Error: ', error);
             }
-            setMileageLoading(false);
+        }
+    }
+
+    const handleUpdatePrice = async (carId: number, newPrice: number) => {
+        if ((window as any).ethereum !== "undefined") {
+            const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
+            try {
+                await contract.updatePrice(carId, newPrice);
+            } catch (error) {
+                console.log('Error: ', error);
+            }
         }
     }
 
@@ -136,8 +140,14 @@ const RegisterCar: FC = () => {
                 <h2 className={classNames(css.title, "mt-3")}>Your cars</h2>
                 <Row>
                     <Col>
-                        <CarList activeCar={activeCar} onClickCar={handleClickCar} cars={cars}/>
-                        {cars.length > 0 && <Button className="mb-3" loading={mileageLoading} disabled={!activeCar} type="button" onClick={handleUpdateMileage}>Update Mileage</Button>}
+                        <CarList
+                            editable={true}
+                            onClickCar={() => {}}
+                            activeCar={activeCar}
+                            cars={cars}
+                            updateMileage={handleUpdateMileage}
+                            updatePrice={handleUpdatePrice}
+                        />
                     </Col>
                 </Row>
             </div>

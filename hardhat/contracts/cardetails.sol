@@ -49,6 +49,10 @@ contract CarDetails is Ownable {
         cars[_carId].mileage = _newMileage;
     }
 
+    function updatePrice(uint _carId, uint32 _newPrice) external onlyOwner {
+        cars[_carId].price = _newPrice;
+    }
+
     function getCar(uint _carId) external view returns (Car memory) {
         return cars[_carId];
     }
@@ -112,10 +116,6 @@ contract CarDetails is Ownable {
 
     function toggleSaleState(uint _carId) external onlyOwner {
         cars[_carId].isForSale = !cars[_carId].isForSale;
-    }
-
-    function updatePrice(uint _carId, uint32 _newPrice) external onlyOwner {
-        cars[_carId].price = _newPrice;
     }
 
 }

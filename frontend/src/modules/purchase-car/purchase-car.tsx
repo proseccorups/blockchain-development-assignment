@@ -53,7 +53,7 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
                         brand: c.brand,
                         carType: c.carType,
                         colour: c.colour,
-                        pictures: [],
+                        pictures: c.pictures,
                         isForSale: c.isForSale
                     }
                     newCars.push(car);
@@ -81,7 +81,14 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
         <div className={css.root}>
             <div className={css.limitWidth}>
                 <h2 className={classNames(css.title, "mt-3")}>Cars for sale</h2>
-                <CarList activeCar={activeCar} onClickCar={handleClickCar} cars={cars}/>
+                <CarList
+                    editable={false}
+                    activeCar={activeCar}
+                    onClickCar={handleClickCar}
+                    cars={cars}
+                    updateMileage={() => {}}
+                    updatePrice={() => {}}
+                />
                 <Button disabled={!activeCar} type="button" onClick={handleBuyCar}>Buy car</Button>
             </div>
         </div>
