@@ -10,8 +10,6 @@ import ethers from 'ethers';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import {DEFAULT_CAR_STATE} from "../../constants/cars";
 import CarForm from "../../components/car-form/car-form";
-import {Simulate} from "react-dom/test-utils";
-import copy = Simulate.copy;
 
 const ipfs = ipfsHttpClient({
     host: 'localhost',
