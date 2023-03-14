@@ -29,7 +29,7 @@ contract CarOwnership is CarDetails, ERC721 {
     function transferFrom(address _from, address _to, uint256 _tokenId) external override payable {
         require(cars[_tokenId].isForSale,  "This car is not for sale");
         require(carToOwner[uint32(_tokenId)] != msg.sender, "You already own this car so you can not buy it");
-//        payable(carToOwner[uint32(_tokenId)]).transfer(cars[_tokenId].price);
+        payable(_from).transfer(cars[_tokenId].price);
         _transfer(_from, _to, _tokenId);
     }
 

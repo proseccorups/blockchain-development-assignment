@@ -57,8 +57,8 @@ const CarCard: FC<CarCardProps> = ({car, onClick, active, editable, updatePrice,
             <>
                 <div className={css.content}>
                     <div className={css.imageDiv}>
-                        <img className={css.image} src={`http://localhost:8080/ipfs/${car.pictures[0]}`}
-                             alt="could not load"/>
+                        <img className={css.image} src={`http://localhost:8081/ipfs/${car.pictures[0]}`}
+                        alt="could not load"/>
                     </div>
                     <div className={css.carDetails}>
                         <div className={classNames(css.carDetailsRight, "me-3")}>
@@ -104,8 +104,8 @@ const CarCard: FC<CarCardProps> = ({car, onClick, active, editable, updatePrice,
                     {(editPriceMode || editMileageMode) && <Button onClick={handleClickCancel} className={css.cancelButton} type="button">
                         <XLg className={classNames(css.cancelIcon, "me-2")}/> Cancel
                     </Button>}
-                    {editMileageMode && <Button onClick={onUpdateMileage} className={css.editButton} type="button">Update Mileage</Button>}
-                    {editPriceMode && <Button onClick={onUpdatePrice} className={css.editButton} type="button">Update Price</Button>}
+                    {editMileageMode && <Button disabled={newMileage === 0 || newMileage <= car.mileage} onClick={onUpdateMileage} className={css.editButton} type="button">Update Mileage</Button>}
+                    {editPriceMode && <Button disabled={newPrice === 0 || newPrice === car.price} onClick={onUpdatePrice} className={css.editButton} type="button">Update Price</Button>}
                 </div>
             </>
         </Card>

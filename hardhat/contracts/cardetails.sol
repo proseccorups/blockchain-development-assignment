@@ -76,7 +76,6 @@ contract CarDetails is Ownable {
                 counter++;
             }
         }
-        console.log("result length: ", result.length);
         return result;
     }
 

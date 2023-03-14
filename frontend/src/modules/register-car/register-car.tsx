@@ -2,7 +2,6 @@ import React, {FC, useEffect, useState} from 'react';
 import {Col, Row} from "react-bootstrap";
 import classNames from "classnames";
 import css from './register-car.module.scss';
-import Button from "../../components/button/button";
 import {Car} from "../../interfaces/car";
 import CarOwnership from "../../artifacts/contracts/carownership.sol/CarOwnership.json";
 import CarList from "../../components/car-list/car-list";
@@ -11,6 +10,8 @@ import ethers from 'ethers';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import {DEFAULT_CAR_STATE} from "../../constants/cars";
 import CarForm from "../../components/car-form/car-form";
+import {Simulate} from "react-dom/test-utils";
+import copy = Simulate.copy;
 
 const ipfs = ipfsHttpClient({
     host: 'localhost',
@@ -19,7 +20,7 @@ const ipfs = ipfsHttpClient({
 });
 
 const RegisterCar: FC = () => {
-    const [newCar, setNewCar] = useState<Car>(DEFAULT_CAR_STATE);
+    const [newCar, setNewCar] = useState<Car>(structuredClone(DEFAULT_CAR_STATE));
     const [cars, setCars] = useState<Car[]>([]);
     const [activeCar, setActiveCar] = useState<Car>();
 
@@ -60,7 +61,7 @@ const RegisterCar: FC = () => {
             await transaction.wait();
             getCarsFromBlockchain();
         }
-        setNewCar(DEFAULT_CAR_STATE);
+        setNewCar(structuredClone(DEFAULT_CAR_STATE));
         setAddCarLoading(false);
     }
 
@@ -95,7 +96,6 @@ const RegisterCar: FC = () => {
     };
 
     const handleUpdateMileage = async (carId: number, newMileage: number) => {
-        console.log("got here");
         if ((window as any).ethereum !== "undefined") {
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
             const signer = provider.getSigner();
