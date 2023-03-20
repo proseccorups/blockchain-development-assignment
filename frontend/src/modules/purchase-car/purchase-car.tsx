@@ -91,7 +91,6 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
             const signer = provider.getSigner();
             const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             const balance = await contract.getWalletBalance(signer.getAddress());
-            console.log(balance);
             setHasBalance(balance > 0);
         }
     }
@@ -143,7 +142,6 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
                     updatePrice={() => {}}
                 />
                 <Button disabled={!activeCar} type="button" onClick={handleBuyCar}>Buy car</Button>
-                <button onClick={checkBalance}>log balance</button>
             </div>
         </div>
     )
