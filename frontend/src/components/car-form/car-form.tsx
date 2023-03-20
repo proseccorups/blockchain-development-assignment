@@ -164,7 +164,7 @@ const CarForm: FC<CarFormProps> = ({
                             />
                         </div>
                         <Input
-                            label="Picture"
+                            label="Picture (optional)"
                             name="Picture"
                             valid={true}
                             disabled={false}

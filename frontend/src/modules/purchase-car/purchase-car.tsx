@@ -7,12 +7,14 @@ import {Car} from "../../interfaces/car";
 import CarList from "../../components/car-list/car-list";
 import Button from "../../components/button/button";
 import ethers from 'ethers';
+import Web3 from "web3";
 
 interface PurchaseCarProps {}
 
 const PurchaseCar: FC<PurchaseCarProps> = () => {
     const [cars, setCars] = useState<Car[]>([]);
     const [activeCar, setActiveCar] = useState<Car>();
+    const [hasBalance, setHasBalance] = useState<boolean>();
 
     const requestAccount = async () => {
         await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
@@ -22,14 +24,32 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
         if (typeof (window as any).ethereum !== "undefined" && activeCar) {
             await requestAccount();
 
+            // Setting up the required values
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
             const signer = provider.getSigner();
-
             const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             const ownerAddress: string = await contract.getCarOwner(activeCar.id);
             const buyerAddress = await signer.getAddress();
-            const transaction = await contract.transferFrom(ownerAddress, buyerAddress, activeCar.id);
-            await transaction.wait();
+            const carPrice = Web3.utils.toWei(activeCar.price.toString(), 'ether');
+
+            // Retrieve the amount of ether that the buyer has already stored on the contract
+            const contractBalance = await contract.getWalletBalance(buyerAddress);
+
+            // If the buyer doesn't have enough ether, the required amount will be added.
+            if (contractBalance < carPrice) {
+                const transaction = await contract.addEtherToYourWallet({value: carPrice});
+                transaction.wait();
+            }
+
+            try {
+                const transaction = await contract.transferFrom(ownerAddress, buyerAddress, activeCar.id);
+                await transaction.wait();
+            } catch (error) {
+                console.log(error);
+            }
+
+            const balance = await contract.getWalletBalance(buyerAddress);
+            setHasBalance(balance > 0);
             getCarsForSaleFromBlockchain();
         }
     }
@@ -63,6 +83,34 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
         }
     };
 
+    const checkBalance = async () => {
+        if (typeof (window as any).ethereum !== "undefined") {
+            await requestAccount();
+
+            const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
+            const balance = await contract.getWalletBalance(signer.getAddress());
+            console.log(balance);
+            setHasBalance(balance > 0);
+        }
+    }
+
+    const refundEtherFromContract = async () => {
+        if (typeof (window as any).ethereum !== "undefined") {
+            const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
+            try {
+                const transaction = await contract.withdrawEtherFromWallet();
+                transaction.wait();
+                setHasBalance(false);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
+
     const handleClickCar = (car: Car) => {
         if (activeCar && activeCar.id === car.id) {
             setActiveCar(undefined);
@@ -73,11 +121,18 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
 
     useEffect(() => {
         getCarsForSaleFromBlockchain();
+        checkBalance();
     }, []);
 
     return (
         <div className={css.root}>
             <div className={css.limitWidth}>
+                {hasBalance &&
+                    <>
+                        <h4 className={classNames(css.title, "mt-3", "mb-3")}>You currently already have funds on the contract</h4>
+                        <Button onClick={refundEtherFromContract} type="button">Withdraw funds from contract</Button>
+                    </>
+                }
                 <h2 className={classNames(css.title, "mt-3")}>Cars for sale</h2>
                 <CarList
                     editable={false}
@@ -88,6 +143,7 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
                     updatePrice={() => {}}
                 />
                 <Button disabled={!activeCar} type="button" onClick={handleBuyCar}>Buy car</Button>
+                <button onClick={checkBalance}>log balance</button>
             </div>
         </div>
     )

@@ -22,7 +22,6 @@ const RegisterCar: FC = () => {
     const [cars, setCars] = useState<Car[]>([]);
     const [activeCar, setActiveCar] = useState<Car>();
 
-    const [mileageLoading, setMileageLoading] = useState<boolean>(false);
     const [addCarLoading, setAddCarLoading] = useState<boolean>(false);
 
     const [publicKey, setPublicKey] = useState<string>("");

@@ -38,6 +38,12 @@ contract CarDetails is Ownable {
 
     function createCar(uint32 _chassisNumber, uint32 _mileage, uint32 _price, string memory _licensePlate, string memory _brand, string memory _carType, string memory _colour, string[] memory _pictures, bool _isForSale) external {
         Car memory newCar = Car(uint32(cars.length), _chassisNumber, _mileage, _price, _licensePlate, _brand, _carType, _colour, _pictures, _isForSale);
+        require(
+            _chassisNumber != 0 && _mileage != 0 && _price != 0 &&
+            (bytes)(_licensePlate).length != 0 && (bytes)(_brand).length != 0 &&
+            (bytes)(_carType).length != 0 && (bytes)(_colour).length != 0,
+            "Some fields were not correctly filled in."
+        );
         cars.push(newCar);
         carToOwner[newCar.id] = msg.sender;
         ownerCarCount[msg.sender] = ownerCarCount[msg.sender].add(1);
