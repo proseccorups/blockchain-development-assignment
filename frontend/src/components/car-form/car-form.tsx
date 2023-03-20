@@ -13,7 +13,6 @@ interface CarFormProps {
     changeCarValues: Dispatch<SetStateAction<Car>>;
     changeIpfsFile: Dispatch<SetStateAction<File | undefined>>
     onSubmit: () => void;
-    onChangePublicKey: (key: string) => void;
     loading: boolean;
     buttonDisabled: boolean;
 }
@@ -23,7 +22,6 @@ const CarForm: FC<CarFormProps> = ({
                                        changeCarValues,
                                        changeIpfsFile,
                                        onSubmit,
-                                       onChangePublicKey,
                                        loading,
                                        buttonDisabled
                                    }) => {
@@ -76,106 +74,97 @@ const CarForm: FC<CarFormProps> = ({
     }
 
     return (
-        <>
-            <Input
-                className="mt-3"
-                valid={true}
-                disabled={false}
-                label="Public key:"
-                onChange={(event: ChangeEvent<HTMLInputElement>) => onChangePublicKey(event.target.value)}
-            />
-            <form onSubmit={handleSubmit}>
-                <h2 className={classNames(css.title, "mt-3")}>Submit car details</h2>
-                <Row className="mt-3">
-                    <Col sm={12} md={6} lg={6}>
-                        <Input
-                            value={String(newCar.chassisNumber)}
-                            name="Chassis Number"
-                            valid={true}
-                            disabled={false}
-                            label="Chassis Number"
-                            type="number"
-                            className="mb-2"
-                            onChange={handleChanges}
+        <form onSubmit={handleSubmit}>
+            <h2 className={classNames(css.title, "mt-3")}>Submit car details</h2>
+            <Row className="mt-3">
+                <Col sm={12} md={6} lg={6}>
+                    <Input
+                        value={String(newCar.chassisNumber)}
+                        name="Chassis Number"
+                        valid={true}
+                        disabled={false}
+                        label="Chassis Number"
+                        type="number"
+                        className="mb-2"
+                        onChange={handleChanges}
+                    />
+                    <Input
+                        value={String(newCar.mileage)}
+                        name="Mileage"
+                        valid={true}
+                        disabled={false}
+                        label="Mileage"
+                        type="number"
+                        className="mb-2"
+                        onChange={handleChanges}
+                    />
+                    <Input
+                        value={String(newCar.price)}
+                        name="Price"
+                        valid={true}
+                        disabled={false}
+                        label="Price"
+                        type="number"
+                        className="mb-2"
+                        onChange={handleChanges}
+                    />
+                    <Input
+                        value={newCar.licensePlate}
+                        name="License Plate"
+                        valid={true}
+                        disabled={false}
+                        label="License Plate"
+                        className="mb-2"
+                        onChange={handleChanges}
+                    />
+                    <Input
+                        value={newCar.brand}
+                        name="Brand"
+                        valid={true}
+                        disabled={false}
+                        label="Brand"
+                        className="mb-2"
+                        onChange={handleChanges}
+                    />
+                </Col>
+                <Col sm={12} md={6} lg={6}>
+                    <Input
+                        value={newCar.carType}
+                        name="Car Type"
+                        valid={true}
+                        disabled={false}
+                        label="Car Type"
+                        className="mb-2"
+                        onChange={handleChanges}
+                    />
+                    <Input
+                        value={newCar.colour}
+                        name="Colour"
+                        valid={true}
+                        disabled={false}
+                        label="Colour"
+                        className="mb-2"
+                        onChange={handleChanges}
+                    />
+                    <div className={classNames(css.forSaleDiv, "mt-5")}>
+                        <p className="me-2 mb-4">Is the car for sale?</p>
+                        <Checkbox
+                            checked={newCar.isForSale}
+                            onClick={() => changeCarValues({...newCar, isForSale: !newCar.isForSale})}
                         />
-                        <Input
-                            value={String(newCar.mileage)}
-                            name="Mileage"
-                            valid={true}
-                            disabled={false}
-                            label="Mileage"
-                            type="number"
-                            className="mb-2"
-                            onChange={handleChanges}
-                        />
-                        <Input
-                            value={String(newCar.price)}
-                            name="Price"
-                            valid={true}
-                            disabled={false}
-                            label="Price"
-                            type="number"
-                            className="mb-2"
-                            onChange={handleChanges}
-                        />
-                        <Input
-                            value={newCar.licensePlate}
-                            name="License Plate"
-                            valid={true}
-                            disabled={false}
-                            label="License Plate"
-                            className="mb-2"
-                            onChange={handleChanges}
-                        />
-                        <Input
-                            value={newCar.brand}
-                            name="Brand"
-                            valid={true}
-                            disabled={false}
-                            label="Brand"
-                            className="mb-2"
-                            onChange={handleChanges}
-                        />
-                    </Col>
-                    <Col sm={12} md={6} lg={6}>
-                        <Input
-                            value={newCar.carType}
-                            name="Car Type"
-                            valid={true}
-                            disabled={false}
-                            label="Car Type"
-                            className="mb-2"
-                            onChange={handleChanges}
-                        />
-                        <Input
-                            value={newCar.colour}
-                            name="Colour"
-                            valid={true}
-                            disabled={false}
-                            label="Colour"
-                            className="mb-2"
-                            onChange={handleChanges}
-                        />
-                        <div className={classNames(css.forSaleDiv, "mt-5")}>
-                            <p className="me-2 mb-4">Is the car for sale?</p>
-                            <Checkbox
-                                checked={newCar.isForSale}
-                                onClick={() => changeCarValues({...newCar, isForSale: !newCar.isForSale})}
-                            />
-                        </div>
-                        <Input
-                            label="Picture (optional)"
-                            name="Picture"
-                            valid={true}
-                            disabled={false}
-                            type="file"
-                            onChange={retrieveFile}
-                        />
-                        <Button disabled={buttonDisabled} loading={loading} type="submit">Submit</Button>
-                    </Col>
-                </Row>
-            </form>
-        </>
+                    </div>
+                    <Input
+                        label="Picture (optional)"
+                        name="Picture"
+                        valid={true}
+                        disabled={false}
+                        type="file"
+                        onChange={retrieveFile}
+                    />
+                    <Button disabled={buttonDisabled} loading={loading} type="submit">Submit</Button>
+                </Col>
+            </Row>
+        </form>
     )
 }
 

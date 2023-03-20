@@ -9,12 +9,15 @@ import Button from "../../components/button/button";
 import ethers from 'ethers';
 import Web3 from "web3";
 
-interface PurchaseCarProps {}
+interface PurchaseCarProps {
+    publicKey: string;
+}
 
-const PurchaseCar: FC<PurchaseCarProps> = () => {
+const PurchaseCar: FC<PurchaseCarProps> = ({publicKey}) => {
     const [cars, setCars] = useState<Car[]>([]);
     const [activeCar, setActiveCar] = useState<Car>();
-    const [hasBalance, setHasBalance] = useState<boolean>();
+    const [hasBalance, setHasBalance] = useState<boolean>(false);
+    const [buyCarLoading, setBuyCarLoading] = useState<boolean>(false);
 
     const requestAccount = async () => {
         await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
@@ -22,11 +25,12 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
 
     const handleBuyCar = async () => {
         if (typeof (window as any).ethereum !== "undefined" && activeCar) {
+            setBuyCarLoading(true);
             await requestAccount();
 
             // Setting up the required values
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-            const signer = provider.getSigner();
+            const signer = provider.getSigner(publicKey);
             const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             const ownerAddress: string = await contract.getCarOwner(activeCar.id);
             const buyerAddress = await signer.getAddress();
@@ -51,15 +55,17 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
             const balance = await contract.getWalletBalance(buyerAddress);
             setHasBalance(balance > 0);
             getCarsForSaleFromBlockchain();
+            setBuyCarLoading(false);
         }
     }
 
     const getCarsForSaleFromBlockchain = async () => {
         if ((window as any).ethereum !== "undefined") {
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+
             const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, provider);
             try {
-                const data: Car[] = await contract.getCarsForSale();
+                const data: Car[] = await contract.getCarsForSale(publicKey);
                 const newCars: Car[] = [];
                 data.forEach((c: Car) => {
                     const car: Car = {
@@ -88,7 +94,7 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
             await requestAccount();
 
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-            const signer = provider.getSigner();
+            const signer = provider.getSigner(publicKey);
             const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             const balance = await contract.getWalletBalance(signer.getAddress());
             setHasBalance(balance > 0);
@@ -98,7 +104,7 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
     const refundEtherFromContract = async () => {
         if (typeof (window as any).ethereum !== "undefined") {
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-            const signer = provider.getSigner();
+            const signer = provider.getSigner(publicKey);
             const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             try {
                 const transaction = await contract.withdrawEtherFromWallet();
@@ -121,7 +127,7 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
     useEffect(() => {
         getCarsForSaleFromBlockchain();
         checkBalance();
-    }, []);
+    }, [publicKey]);
 
     return (
         <div className={css.root}>
@@ -141,7 +147,7 @@ const PurchaseCar: FC<PurchaseCarProps> = () => {
                     updateMileage={() => {}}
                     updatePrice={() => {}}
                 />
-                <Button disabled={!activeCar} type="button" onClick={handleBuyCar}>Buy car</Button>
+                <Button loading={buyCarLoading} disabled={!activeCar || buyCarLoading} type="button" onClick={handleBuyCar}>Buy car</Button>
             </div>
         </div>
     )

@@ -85,21 +85,21 @@ contract CarDetails is Ownable {
         return result;
     }
 
-    function _calculateForSaleCarCount() private view returns (uint) {
+    function _calculateForSaleCarCount(address _buyer) private view returns (uint) {
         uint result = 0;
         for (uint i = 0; i < cars.length; i++) {
-            if (carToOwner[uint32(i)] != msg.sender && cars[i].isForSale) {
+            if (carToOwner[uint32(i)] != _buyer && cars[i].isForSale) {
                 result++;
             }
         }
         return result;
     }
 
-    function getCarsForSale() external view returns (Car[] memory) {
-        Car[] memory result = new Car[](_calculateForSaleCarCount());
+    function getCarsForSale(address _buyer) external view returns (Car[] memory) {
+        Car[] memory result = new Car[](_calculateForSaleCarCount(_buyer));
         uint counter = 0;
         for (uint i = 0; i < cars.length; i++) {
-            if (carToOwner[uint32(i)] != msg.sender && cars[i].isForSale) {
+            if (carToOwner[uint32(i)] != _buyer && cars[i].isForSale) {
                 result[counter] = cars[i];
                 counter++;
             }

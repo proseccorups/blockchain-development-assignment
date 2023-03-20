@@ -17,14 +17,16 @@ const ipfs = ipfsHttpClient({
     protocol: 'http',
 });
 
-const RegisterCar: FC = () => {
+interface RegisterCarProps {
+    publicKey: string;
+}
+
+const RegisterCar: FC<RegisterCarProps> = ({publicKey}) => {
     const [newCar, setNewCar] = useState<Car>(structuredClone(DEFAULT_CAR_STATE));
     const [cars, setCars] = useState<Car[]>([]);
     const [activeCar, setActiveCar] = useState<Car>();
 
     const [addCarLoading, setAddCarLoading] = useState<boolean>(false);
-
-    const [publicKey, setPublicKey] = useState<string>("");
 
     const [ipfsFile, setIpfsFile] = useState<File | undefined>(undefined);
 
@@ -130,7 +132,6 @@ const RegisterCar: FC = () => {
                     changeCarValues={setNewCar}
                     changeIpfsFile={setIpfsFile}
                     onSubmit={handleAddCar}
-                    onChangePublicKey={(key: string) => setPublicKey(key)}
                     loading={addCarLoading}
                     buttonDisabled={publicKey === ""}
                 />
