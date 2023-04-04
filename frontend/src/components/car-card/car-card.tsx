@@ -37,13 +37,13 @@ const CarCard: FC<CarCardProps> = ({car, onClick, active, editable, updatePrice,
 
     const onUpdateMileage = () => {
         if ((!(newMileage > car.mileage))) return;
-        setEditMileageMode(false);
         updateMileage(newMileage);
+        setEditMileageMode(false);
     }
 
     const onUpdatePrice = () => {
-        setEditPriceMode(false);
         updatePrice(newPrice)
+        setEditPriceMode(false);
     }
 
     const handleClickCancel = () => {

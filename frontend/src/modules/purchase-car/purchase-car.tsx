@@ -41,8 +41,15 @@ const PurchaseCar: FC<PurchaseCarProps> = ({publicKey}) => {
 
             // If the buyer doesn't have enough ether, the required amount will be added.
             if (contractBalance < carPrice) {
-                const transaction = await contract.addEtherToYourWallet({value: carPrice});
-                transaction.wait();
+               try {
+                   const transaction = await contract.addEtherToYourWallet({value: carPrice});
+                   transaction.wait();
+               } catch (error) {
+                   console.log(error);
+                   setBuyCarLoading(false);
+                   return;
+               }
+
             }
 
             try {
@@ -125,8 +132,10 @@ const PurchaseCar: FC<PurchaseCarProps> = ({publicKey}) => {
     }
 
     useEffect(() => {
-        getCarsForSaleFromBlockchain();
-        checkBalance();
+        if (publicKey && publicKey !== '') {
+            getCarsForSaleFromBlockchain();
+            checkBalance();
+        }
     }, [publicKey]);
 
     return (

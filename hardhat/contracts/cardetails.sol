@@ -50,12 +50,12 @@ contract CarDetails is Ownable {
         emit NewCar(newCar);
     }
 
-    function updateMileage(uint _carId, uint32 _newMileage) external onlyOwner {
+    function updateMileage(uint32 _carId, uint32 _newMileage) external onlyOwnerOf(_carId) {
         require(_newMileage > cars[_carId].mileage, "The new milage must be higher OULEH");
         cars[_carId].mileage = _newMileage;
     }
 
-    function updatePrice(uint _carId, uint32 _newPrice) external onlyOwner {
+    function updatePrice(uint32 _carId, uint32 _newPrice) external onlyOwnerOf(_carId) {
         cars[_carId].price = _newPrice;
     }
 

@@ -90,6 +90,7 @@ const RegisterCar: FC<RegisterCarProps> = ({publicKey}) => {
                 setCars((newCars));
             } catch (error) {
                 console.log('Error: ', error);
+                setCars([]);
             }
         }
     };
@@ -97,10 +98,12 @@ const RegisterCar: FC<RegisterCarProps> = ({publicKey}) => {
     const handleUpdateMileage = async (carId: number, newMileage: number) => {
         if ((window as any).ethereum !== "undefined") {
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-            const signer = provider.getSigner();
+            const signer = provider.getSigner(publicKey);
             const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             try {
-                await contract.updateMileage(carId, newMileage);
+                const transaction = await contract.updateMileage(carId, newMileage);
+                await transaction.wait();
+                getCarsFromBlockchain()
             } catch (error) {
                 console.log('Error: ', error);
             }
@@ -110,10 +113,12 @@ const RegisterCar: FC<RegisterCarProps> = ({publicKey}) => {
     const handleUpdatePrice = async (carId: number, newPrice: number) => {
         if ((window as any).ethereum !== "undefined") {
             const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-            const signer = provider.getSigner();
+            const signer = provider.getSigner(publicKey);
             const contract = new ethers.Contract(CAR_OWNERSHIP_ADDRESS, CarOwnership.abi, signer);
             try {
-                await contract.updatePrice(carId, newPrice);
+                const transaction = await contract.updatePrice(carId, newPrice);
+                await transaction.wait();
+                getCarsFromBlockchain()
             } catch (error) {
                 console.log('Error: ', error);
             }
